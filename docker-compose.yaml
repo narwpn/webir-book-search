@@ -1,0 +1,110 @@
+services:
+  web-crawler:
+    build:
+      context: ./web-crawler
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    environment:
+      CRAWLER_THREADS: 8
+      REDIS_HOST: "redis:6379"
+      REDIS_PASSWORD: "1q2w3e4r"
+      REDIS_DB: 0
+      MINIO_ENDPOINT: "minio:9000"
+      MINIO_ACCESS_KEY: "admin"
+      MINIO_SECRET_KEY: "1q2w3e4r"
+      MINIO_BUCKET: "html"
+      POSTGRES_DSN: "host=postgres user=admin password=1q2w3e4r dbname=book_search port=5432 sslmode=disable TimeZone=Asia/Bangkok"
+  
+  search-engine:
+    build:
+      context: ./search-engine
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: always
+    ports:
+      - "3000:3000"
+      - "5000:5000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  search-ui:
+    build:
+      context: ./search-ui
+    depends_on:
+      search-engine:
+        condition: service_healthy
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      NEXT_PUBLIC_API_URL: "http://search-engine:3000"
+
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning --requirepass 1q2w3e4r
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "1q2w3e4r", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  minio:
+    image: minio/minio
+    restart: always
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    environment:
+      MINIO_ROOT_USER: "admin"
+      MINIO_ROOT_PASSWORD: "1q2w3e4r"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://minio:9000/minio/health/live"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  postgres:
+    image: postgres:latest
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "1q2w3e4r"
+      POSTGRES_DB: "book_search"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d book_search"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+volumes:
+  redis_data:
+    driver: local
+  minio_data:
+    driver: local
+  postgres_data:
+    driver: local
