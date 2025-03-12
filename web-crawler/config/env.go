@@ -18,7 +18,7 @@ type EnvVariables struct {
 	MinioSecretKey string `env:"MINIO_SECRET_KEY,default=1q2w3e4r"`
 	MinioBucket    string `env:"MINIO_BUCKET,default=html"`
 
-	PostgresDSN string `env:"POSTGRES_DSN,default=host=localhost user=admin password=1q2w3e4r dbname=book_search port=5432 sslmode=disable TimeZone=Asia/Shanghai"`
+	PostgresDSN string `env:"POSTGRES_DSN,default=host=localhost user=admin password=1q2w3e4r dbname=book_search port=5432 sslmode=disable TimeZone=Asia/Bangkok"`
 }
 
 func GetEnv() (*EnvVariables, error) {
