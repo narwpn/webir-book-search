@@ -7,7 +7,7 @@ COPY . .
 RUN go mod tidy
 RUN go build -o crawler-executable
 
-FROM debian:bookworm-slim
+FROM golang:bookworm
 
 WORKDIR /app
 
