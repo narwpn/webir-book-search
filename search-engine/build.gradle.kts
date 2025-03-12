@@ -40,10 +40,19 @@ dependencies {
     implementation("org.apache.lucene:lucene-queryparser:10.1.0")
     implementation("org.apache.lucene:lucene-highlighter:10.1.0")
     implementation("org.apache.lucene:lucene-queries:10.1.0")
-    implementation("org.jobrunr:jobrunr-spring-boot-3-starter:7.4.1")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.18.3")
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.register<JavaExec>("index") {
+    group = "application"
+    description = "Index books"
+    mainClass.set("webir.booksearchengine.BookIndexerCliApplication")
+    classpath = sourceSets.main.get().runtimeClasspath
+}
+
+tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
+    mainClass.set("webir.booksearchengine.BookSearchEngineApplication")
 }
