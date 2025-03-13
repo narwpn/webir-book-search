@@ -20,4 +20,4 @@ COPY --from=builder /app/public ./public
 
 EXPOSE 8080
 
-CMD ["npm", "run", "start"]
+ENTRYPOINT ["npm", "run", "start"]

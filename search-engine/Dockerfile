@@ -7,8 +7,11 @@ COPY . .
 # Used for health check
 RUN apk add --no-cache curl
 
-RUN chmod +x entrypoint.sh
+VOLUME [ "/app/index" ]
 
-EXPOSE 3000 5000
+# Index
+# ENTRYPOINT ["./gradlew", "index", "--args=--spring.profiles.active=prod"]
 
-ENTRYPOINT ["./entrypoint.sh"]
+# Search
+EXPOSE 3000
+ENTRYPOINT ["./gradlew", "bootRun", "--args=--spring.profiles.active=prod"]

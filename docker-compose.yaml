@@ -9,6 +9,7 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
+    entrypoint: ./crawler-executable
     environment:
       CRAWLER_THREADS: 8
       REDIS_HOST: "redis:6379"
@@ -19,22 +20,6 @@ services:
       MINIO_SECRET_KEY: "1q2w3e4r"
       MINIO_BUCKET: "html"
       POSTGRES_DSN: "host=postgres user=admin password=1q2w3e4r dbname=book_search port=5432 sslmode=disable TimeZone=Asia/Bangkok"
-
-  # search-engine:
-  #   build:
-  #     context: ./search-engine
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #   restart: always
-  #   ports:
-  #     - "3000:3000"
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:3000/ping"]
-  #     interval: 5s
-  #     timeout: 3s
-  #     retries: 5
-  #     start_period: 5s
 
   index-engine:
     build:
@@ -62,7 +47,7 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:3000/ping"]
       interval: 5s
       timeout: 3s
-      retries: 5
+      retries: 10
       start_period: 5s
 
   search-ui:
@@ -74,6 +59,7 @@ services:
     restart: always
     ports:
       - "8080:8080"
+    entrypoint: npm run start
     environment:
       NEXT_PUBLIC_API_URL: "http://search-engine:3000"
 

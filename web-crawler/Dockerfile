@@ -15,4 +15,4 @@ COPY --from=builder /app/crawler-executable /app/crawler-executable
 
 RUN chmod +x /app/crawler-executable
 
-ENTRYPOINT [ "/app/crawler-executable" ]
+ENTRYPOINT [ "./crawler-executable" ]

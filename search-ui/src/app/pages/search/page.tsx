@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import React, { useState } from 'react';
@@ -6,7 +7,6 @@ import Highlighter from 'react-highlight-words';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
 import Loading from '@/app/components/Loading';
-import Image from 'next/image';
 
 
 const Search = () => {
@@ -161,12 +161,13 @@ const Search = () => {
                     {paginatedResults.map((book, index) => (
                         <div key={index} onClick={() => window.open(`${book.url}`, '_blank')} className={`p-4 rounded shadow ${darkMode ? 'bg-gray-900' : 'bg-white'} cursor-pointer grid grid-cols-4 justify-between shadow hover:bg-gray-200 ${darkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-200'} hover:scale-105 transition-all`}>
                             <div className="px-10 py-3">
-                            <Image 
+                            <img 
                                 src={book.imageUrl || '/fallback-image.png'} 
                                 alt={book.title}
-                                width={200}
-                                height={300}
+                                width="200"
+                                height="300"
                                 className="object-cover mb-2"
+                                style={{ objectFit: 'cover', marginBottom: '0.5rem' }}
                             />
                             </div>
                             <div className="mt-2 col-span-2">
